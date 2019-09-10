@@ -1,4 +1,4 @@
-package com.fsnip.HighOrderFunction
+package com.fsnip.highorderfunction
 
 /**
   * @ Author     ：zsp
