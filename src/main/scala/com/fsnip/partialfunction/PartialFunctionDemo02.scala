@@ -7,7 +7,7 @@ package com.fsnip.partialfunction
   * @ Modified By：
   * @ Version:     
   */
-object PartialDemo02 {
+object PartialFunctionDemo02 {
   def main(args: Array[String]): Unit = {
     val list = List(1, 2, 3, 4, "hello")
     // 定义一个偏函数
