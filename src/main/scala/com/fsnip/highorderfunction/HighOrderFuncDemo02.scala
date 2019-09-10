@@ -1,4 +1,4 @@
-package com.fsnip.mymap
+package com.fsnip.highorderfunction
 
 /**
   * @ Author     ：zsp

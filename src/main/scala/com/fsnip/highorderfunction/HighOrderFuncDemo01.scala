@@ -1,4 +1,4 @@
-package com.fsnip.mymap
+package com.fsnip.highorderfunction
 
 /**
   * @ Author     ：zsp
@@ -12,11 +12,12 @@ object HighOrderFuncDemo01 {
     val result = test(sum, 3.5)
     println(result)
 
-//    val f1 = myPrint()  //直接就执行了
+    val f1 = myPrint()  //直接就执行了
 
     // 在scala中，可以直接把一个函数赋值给变量，但是不执行函数
-    val f1 = myPrint _
-    f1
+    val f2 = myPrint _
+    // 调用f1
+    f2.apply()
 
 
   }
