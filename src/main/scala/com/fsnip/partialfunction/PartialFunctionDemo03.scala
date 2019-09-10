@@ -17,5 +17,10 @@ object PartialFunctionDemo03 {
     val list = List(1, 2, 3, 4, 1.2, 2.4, "hello")
     val result = list.collect(partialFun2)
     println(result)
+
+    val list2 = list.collect{case i: Int => i + 1
+    case j: Double => (j * 2).toInt
+    }
+    println(list2)
   }
 }
