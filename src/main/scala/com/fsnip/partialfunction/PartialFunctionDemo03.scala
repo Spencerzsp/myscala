@@ -12,8 +12,9 @@ object PartialFunctionDemo03 {
     // 偏函数的简写形式
     def partialFun2 : PartialFunction[Any, Int] = {
       case i: Int => i + 1
+      case j: Double => (j * 2).toInt
     }
-    val list = List(1, 2, 3, 4, "hello")
+    val list = List(1, 2, 3, 4, 1.2, 2.4, "hello")
     val result = list.collect(partialFun2)
     println(result)
   }
