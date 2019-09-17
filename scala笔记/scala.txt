@@ -1,0 +1,1078 @@
+如果不想包括被枚举的range的上边界，可以使用until代替to
+	for(i <- 0 until 4)
+      println("Iteration " + i)
+	  
+for{子句} yield{循环体}
+
+有时下划线当做参数的占位符，编译器无法推断类型，需要添加冒号指定类型
+
+println(_) = println _         sum(_,_,_) = sum _
+
+函数的闭包
+	函数字面量在运行时创建的函数值（对象）被称为闭包。
+	也就是说函数应该是封闭的，在运行过程中不可避免的调用了外部的变量的现象
+
+重复参数
+	def echo(args : String*) = {
+      for(arg <- args)
+        println(arg)
+    }
+	echo()//0个参数
+    echo("one")//1个参数
+    echo("hello","world!")//2个参数
+	
+	如果确定是某一类型的args时，比如Array，在调用的时候需要使用：
+		val arr = Array("what's","up","doc?")
+		echo(arr:_*)
+		
+尾递归
+	最后一个动作调用自己的函数
+	
+特质trait
+	特质同样是类型，任何变量可以被初始化为任何混入了特质的类的对象，如:
+	trait Philosophical{
+    def philosophize(){
+      println("I consume memory, therefore I am!")
+    }
+  }
+  
+	val frog = new Frog
+    frog.philosophize()
+      
+    val phil: Philosophical = frog//将变量进行初始化(frog混入了特质Pholosophical)
+    phil.philosophize()
+	
+函数赋值给变量
+	将函数赋值给变量时，必须在函数后面加上空格和下划线
+		def sayHello(name: String) { println("Hello, " + name) }
+		val sayHelloFunc = sayHello _
+		sayHelloFunc("leo")
+		
+协变和逆变
+	协变 案例： 进入会场
+		class Master
+		class Professional extends Master
+		// 大师以及大师级别以下的名片都可以进入会场
+		class Card[+T] (val name: String)
+		def enterMeet(card: Card[Master]) {
+			println("welcome to have this meeting!")
+		}
+	逆变案例：只有专家级别以上的名片就可以进入会场， 如果大师级别的过来了， 当然可以了！
+		class Card[-T] (val name: String)
+		def enterMeet(card: Card[Professional]) {
+			println("welcome to have this meeting!")
+		}
+		
+Actor
+	scala actor:类似于java中的多线程编程，能尽可能的避免死锁和共享状态。
+	akka actor：spark中使用的分布式多线程框架akka，其可行概念同样是akka。
+		actor的创建、启动和消息收发
+		使用start()方法启动actor；    使用!符号， 向actor发送消息；   actor内部使用receive和模式匹配接收消息
+
+
+scala函数中结果类型可以自动推断，且函数体只有一句。可以省略函数结果类型和花括号	
+def max(x: Int, y: Int): Int{
+	if(x>y) x
+	else y
+}
+def max(x: Int, y: Int) = if(x>y) x else y
+
+函数作为参数进行传递
+args.foreach(arg => println(arg))	arg:函数字面量，后面跟着的是函数体
+args.foreach((arg: String) => println(arg))
+args.foreach(println(_))
+
+scala中的数组用greetStrings(0)，而不是greetStrings[0],因为最后会转换为apply方法的调用：greetStrings.apply(0)
+val greetStrings: Array[String] = new Array[String](3)  //同样可以省略参数类型 Array[String]
+greetStrings(0) = "Hello"
+greetStrings(1) = ","
+greetStrings(2) = "World!\n"
+
+如果是greetStrings{0} = "Hello",将被转换为greetStrings.update(0,"Hello")
+
+
+如果方法使用操作符来标注，如 a * b，则左操作数是方法的调用者，即 a.*(b)
+方法名以冒号结尾，则是方法被右操作数调用，如 1::twoThree 可以改写成 twoThree.::(1)
+
+Nil是空列表的简写，如 oneTwoThree = 1::2::3::Nil，Nil是定义在List上的方法，最后加上Nil是因为3是Int类型，没有该方法
+
+set和map属于基础特质trait，他们下面分别有两个子特质，分别为可变和不可变的set和map
+
+def f(): Unit = "this is scala" 该方法结果是String，但是结果类型被声明为Unit，那么String将被转变为Unit并丢弃原值
+def g() {"this is scala"} 返回结果 Unit
+def h() = {"this is scala"} 返回结果String
+
+前缀操作符 +、-、！、~
+如 -2.0写成方法为: (2.0).unary_-
+
+for表达式在进行迭代的时候，每次执行完成都会产生一个新值，当for表达式完成的时候，结果将是包含了所有产生值的集合对象。只需要加上关键字yield
+def scalaFiles = 
+	for{
+		file <- filesHere
+		if file.getName.endsWith(".scala")
+	} yield file
+for {子句} yield {循环体}
+
+在java中，try-finally不产生值，如果finally子句中包含了返回语句或者抛出一个异常。该返回值或异常将优于任何之前try代码块或catch子句产生的值和异常。最终返回finally的值。所以finally子句中一般不作返回值，而是做一些流的关闭。
+
+scala中方法里面定义方法，则相当于java中的私有方法
+
+函数字面量是指函数右边出现的值，也可以是语句。函数字面量中只要每个参数仅出现一次，则可以使用下划线占位符。
+
+scala中定义同名参数和字段
+class ArrayElement(val contents: Array[String])extends Element
+
+case class样本类不需要通过new关键字来创建对象
+
+模式守卫
+case n: Int if 0<n => ...
+
+filter和partition、find、span的区别
+	filter返回的是符合论断为真的元素
+	partition返回的是一个列表对。其中一个包含所有论断为真的元素，另一个包含所有论断为假的元素
+	find也与filter类似，不过返回的是第一个满足给定论断的元素，而不是全部。返回的值是Some(x)或者None
+		scala> List(1,2,3,4).find(_ % 2 == 0)
+		res43: Option[Int] = Some(2)
+		
+		scala> List(1,2,3,4).find(_ % 5 == 0)
+		res44: Option[Int] = None
+
+
+	span返回的也是一对列表
+		scala> List(1,2,3,-1,5).span(_ >0)
+		res45: (List[Int], List[Int]) = (List(1, 2, 3),List(-1, 5))
+
+SortedSet和SortedMap特质分别由TreeSet和TreeMap类实现
+
+scala中使用括号传递给变量一个或者多个值参数时，scala会把它转换成对apply方法的调用
+	greeting(i)转换成greeting.apply(i)
+
+a * b：方法的调用者是b
+a.*(b):方法的调用者是a
+同理1 :: twoThree的方法调用者是twoThree
+
+指令时风格：
+	def printArgs(args: Array[String]): Unit = {
+		var i = 0;
+		while(i < args.length){
+			println(i)
+		}
+	}
+函数式风格1：
+	def printArgs(args: Array[String]): Unit = {
+		for(arg <- args)
+			println(args)
+	}
+函数式风格2：
+	def printArgs(args: Array[String]): Unit = {
+		args.foreach(println)  // x => println(x) :如果函数字面量只有一行语句并且只有一个参数，可以省略指代参数
+	}
+
+枚举多次的解决办法
+	val lines = Source.fromFile(args(0)).getLines 返回的是一个迭代器，枚举一次就完了
+	val lines = Source.fromFile(args(0)).getLines.toList    
+
+scala中方法参数的一个重要特征是他们都是val，不是var，不能在方法里面重新给参数赋值
+	def add(a: Int): Int = {
+		a = 1 //编译不通过，英文a是val
+	}
+
+scala中如果方法中没有发现任何显式的返回语句，则将返回方法中最后一次计算得到的值
+
+
+对于本想返回非Unit的方法是却忘记加等号时，错误就出现了
+	scala> def h() {"this String gets returned!"}
+	<console>:23: warning: a pure expression does nothing in statement position; you may be omitting necessary parentheses
+	h: ()Unit
+
+     def h() = {"this String gets returned!"}
+	 h: ()String
+
+任何方法都可以是操作符，关键取决于你如何使用
+	s.indexOf("o")
+	s indexOf "o"
+	前缀和后缀操作符都是一元unary的，方法名在操作符字符上前缀“unary_”
+		scala> (2.0).unary_-
+		res1: Double = -2.0
+
+scala中类的设计，以有理数类Rational为例
+	class Rational(n: Int, d: Int) {
+
+	  require(d != 0)
+	  val numer: Int = n
+	  val denom: Int = d
+	  
+	  def this(n: Int) = this(n, 1) //辅助构造器 ，第一行必须显示调用主构造器，可以是直接调用也可以是间接调用
+
+	  override def toString: String = n + "/" + d
+
+	  def add(that: Rational): Rational = {
+		new Rational(numer * that.denom + that.numer * denom, denom * that.denom)
+	  }
+
+	}
+
+scala中隐式转换
+	如果 x + y 不能通过类型检查，则需要通过改变 x 类型，让它拥有 + 这个方法
+	比如：implicit def intToString(x: Int) = x.toString
+	必须定义在当前作用域范围内使用，把intToString作为单一标识符带入作用域
+	
+	1.隐式转换为期望类型： x + y  x和y不是同一种类型
+	2.与新类型的交互操作： 2 + new Rational(2,3) 
+
+scala中隐式参数应用于全体参数列表，而不是单独的参数
+	
+
+快速集体缩进：tab 或者 shift + tab 
+IDEA格式化代码：ctrl + alt + l
+
+
+unicode包含ascii码
+当把一个计算的结果赋值给一个变量，则编译器会进行类型转换及判断(即会看范围+类型)
+
+scala中的强制转换(java 中的强制转换 int num = (Int)2.5)
+	var num: Int = 2.5.toInt
+
+函数可以有返回值，也可以没有
+	返回值形式1：	：返回值类型 =
+	返回值形式2：	= 表示返回值类型不确定，使用类型推导完成
+	返回值形式3：		表示没有返回值，return不生效
+
+函数递归需要遵守的重要原则
+	1.执行一个函数时，就创建一个新的受保护的独立空间(新函数栈)
+	2.函数的局部变量是独立的，不会相互影响
+	3.递归函数在执行之前是无法推断出结果类型，在使用时必须指定明确的返回值类型
+
+函数返回值注意事项
+	函数中如果使用了return，返回值类型就不能省略
+	如果返回值类型什么都不写，函数中即使有return，也不生效，返回值也是空 ()
+	如果明确函数无返回值或者不确定返回值类型，那么返回值类型可以省略(或者声明为Any)
+
+scala中可变参数的使用
+	def sum(n1: Int, args: Int *): Int = {  //可变参数必须放在参数列表的最后
+	var sum = 0
+	for(i <- args){	//遍历数组中的参数
+	  sum += i
+	}
+	sum
+	}
+
+scala中泛型的使用
+	abstract class Message[T](s: T) {
+	  def get = s
+	}
+
+	class IntMessage[Int](v: Int) extends Message(v)
+	class StringMessage[String](v: String) extends Message(v)
+
+	//[T <: Comparable[T]]表示T类型是Comparable的子类型
+	class CommonCompare[T <: Comparable[T]](obj1: T, obj2: T){
+	  def greater = if(obj1.compareTo(obj2) > 0) obj1 else obj2
+	}
+
+
+str.take(1):提取第一个字符
+str.drop(1):获取到除去第一个字符以外所有的字符
+
+集合.函数(函数).函数(函数)		--函数式编程，高阶函数
+
+
+辅助构造器，必须在第一行直接或者间接调用主构造器
+	class Person(inName: String, inAge: Int){
+	  var name = inName
+	  var age = inAge
+
+	  def this(name: String){
+		this("jack", 10) //直接调用主构造器
+		this.name = name
+	  }
+	  
+	  def this(age: Int){
+		this("tom") //通过上一个辅助构造器来间接调用主构造器
+		this.age = age
+	  }
+	}
+如果想让主构造器编程私有的，可以在()之前加上private,这样用户就只能通过辅助构造器来创建对象了
+	class Person private (){}
+
+使用@BeanProperty修饰属性后，可以在对象中获取getXxx和setXxx方法
+	class Work(){
+	  @BeanProperty var name: String = ""
+	}
+
+包对象
+	1.在包中直接写方法或者定义变量时会报错 ==> 使用包对象的技术来解决
+	2.package object scala表示创建一个scala对象，他是com.atguigu.scala这个包对应的包对象
+	3.每一个包都可以有一个包对象
+	4.包对象的名字需要和子包的名字保持一致
+	5.在包对象中可以定义方法和变量
+	6.在包对象中定义的变量和方法，就可以在对应的包中使用
+	
+	
+scala中引入包的问题
+	class User{
+	  import scala.beans.BeanProperty //在需要时才引入，作用域在{}
+	  @BeanProperty var name: String = ""
+	  
+	  def test(): Unit ={
+	//    可以使用选择器，选择引入包的内容，这里我们只引入HashMap,HashSet
+		import scala.collection.mutable.{HashMap, HashSet}
+		var map = new HashMap()
+		var set = new HashSet()
+	  }
+
+	  def test2(): Unit ={
+		//    将java.util.HashMap重命名为JavaHashMap
+		import java.util.{HashMap => JavaHashMap, List}
+		import scala.collection.mutable._
+		var map = new HashMap() //指向scala中的HashMap
+		var map1 = new JavaHashMap()  //指向java中的HashMap的别名
+	  }
+	}
+	
+	import java.util.{HashMap=>_, _} //引入java.util包的所有类，但是忽略HashMap类
+
+继承App之后，不需要main主函数也可以运行	
+	
+scala中子类继承了父类的所有属性，只是私有的属性不能直接访问，需要通过公共的方法去访问
+
+属性即方法(底层会转换成对应的方法)	
+	class Account(inAccount: String, inBalance: Double, inPwd: String){
+	  val account = inAccount //通过反编译工具可以发现，底层属性是私有的，account()方法是public的
+	  private var balance = inBalance //通过反编译工具可以发现，底层属性是私有的，balance()方法是private的
+	  var pwd = inPwd
+	}
+
+protected修饰的方法只能在子类中访问，不能再同包类中访问
+
+p.asInstanceOf[T]：p对象本身没变化，只是重新将p转换成T返回一个新的对象
+	def test(p : Person): Unit ={
+    if(p.isInstanceOf[Emp]){
+      p.asInstanceOf[Emp].cry()
+    }else if(p.isInstanceOf[Student]){
+      p.asInstanceOf[Student].cry()
+    }else{
+      println("转换失败")
+    }
+  
+java的动态绑定机制
+	1.如果调用的方式方法，则jvm会将该方法和对象的内存地址绑定，即：如果子类中不含该方法，则会去找父类中的方法，如果该方法中又包方法，则该方法和对象的内存地址绑定，会去找子类对象中的方法
+	2.如果调用的是一个属性，则没有使用动态绑定机制，在哪里调用就返回对应的值
+
+scala中的动态绑定机制
+	注意属性在底层也会生成对应的方法，将对象和内存地址进行动态绑定
+
+scala中抽象类、抽象方法和抽象字段	
+	1.抽象的字段(属性):就是没有初始化的字(属性)	
+	2.当一个类含有抽象属性时，则需要标记为抽象类abstract class
+	3.对于抽象属性，在顶层不会生成对应的属性声明，而是生成两个对应的抽象方法
+		abstrac class A03{
+			var name: String  //抽象属性
+		}
+	4.抽象方法不需要使用abstract修饰
+	5.默认情况下，一个抽象类是不能实例化的，但是你在实例化时，动态实现了抽象类的所有抽象方法，也可以。
+	
+scala中通常将非静态的内容写到伴生类中，将静态的内容写到半身对象中	
+	
+scala中的apply方法
+	val list = List(1,2,3,4) //底层默认调用了apply方法，不需要通过new List
+
+scala中的App特质，默认实现了main方法，可以直接作为函数的入口
+	object TraitDemo03 extends App{
+	  val args2 = args.reverse
+	  println(args2.mkString(" "))
+	}
+	mkString(" ") 转换成字符串以空格分开
+	
+scala中特质快速入门案例：
+	object TraitDemo01 {
+	  def main(args: Array[String]): Unit = {
+		val b = new B()
+		val e = new E()
+		b.getConnect()
+		e.getConnect()
+	  }
+	}
+	trait Trait01{  //定义一个特质 特质=java中的接口+抽象类，特质可以同时拥有抽象方法和具体方法(富接口)
+	  def getConnect() //定义一个抽象方法
+	}
+	class A {}
+	class B extends A with Trait01 {
+	  override def getConnect(): Unit = {
+		println("连接mysql")
+	  }
+	}
+	class C extends A {}
+	class D {}
+	class E extends D with Trait01 {
+	  override def getConnect(): Unit = {
+		println("连接oracle")
+	  }
+	}
+	class F extends D {}
+	
+	当特质中仅仅只有抽象方法的时候，底层特质就只是一个接口。当一个类去继承特质的时候，底层其实就是去实现了特质所对应的接口
+	当特质中有抽象和非抽象方法时，一个trait在底层对应两个：一个接口和一个抽象类。此时如果有一个类去继承这个trait，在底层就会去实现所对应的接口，当这个类要使用特质中的非抽象方法时，就要通过底层所对应的抽象类
+	
+type：可以用于给类型取别名
+	type MyInt = Int
+	val num1: MyInt = 1
+	
+在不修改原有类的情况下，动态混入特质
+	object DynamicMixTrait {
+	  def main(args: Array[String]): Unit = {
+		val oracle = new TraitOracle() with Trait01 //动态混入特质
+		oracle.insert(100)
+
+		val mysql = new TraitMysql() with Trait01 //在混入特质之后，抽象类也可以进行实例化
+		mysql.insert(200)
+
+	//    如果一个抽象类有抽象方法时，动态混入特质如下，方法的实现必须跟在trait之后
+		val mysql1 = new TraitMysql_() with Trait01 {
+		  override def say(): Unit = {
+			println("say")
+		  }
+		}
+		mysql1.insert(300)
+		mysql1.say()
+	  }
+	}
+	trait Trait01{
+	  def insert(n: Int): Unit ={
+		println("插入的数据=" + n)
+	  }
+	}
+	class TraitOracle{}
+	abstract class TraitMysql{}
+	abstract class TraitMysql_{
+	  def say()
+	}	
+	
+scala在叠加特质的时候，会首先从类后面的特质开始执行(即从左到右)，如果特质有相同的父类特质，scala底层会进行判断。
+	val mysql = new Mysql with DB4 with File4
+
+但我们在执行一个动态混入特质的对象的方法时，其执行顺序
+	(1)从右到左开始执行
+	(2)当执行到super时，是指的左边的特质
+	(3)如果左边没有特质了，则super就是父类特质
+	mysql.insert(1)
+	
+如果我们希望直接使用Data的insert方法，可以指定如下
+	super[Data].insert(id) //Data必须是当前特质的直接父类特质
+	
+如果我们在子类特质中重写/实现了父类特质的一个抽象方法，但是同时调用了super，这时我们重写/实现的方法不是完全实现，必须声明为abstract override	
+	
+scala中内部类使用外部类的属性的方法
+	1.外部类名.this.属性
+	2.使用别名的方式(但是属性要写在内部类的后面)
+	
+	
+隐式函数的注意事项和细节
+	1.隐式转换函数的函数名可以是任意的，隐式转换与函数名称无关，只与函数签名(函数参数类型和返回值类型)有关
+	2.隐式函数可以有多个，但是需要保证在当前环境下，只有一个隐式函数能被识别
+	3.隐式转换不能嵌套使用
+	
+隐式值和隐式参数
+	object ImplicitDemo03 {
+	  def main(args: Array[String]): Unit = {
+
+		implicit val str1: String = "jack"  //这个就是隐式值
+
+	//    implicit name,其中name就是隐式参数
+		def hello(implicit name: String): Unit ={
+		  println(name + " hello")
+		}
+		hello //不要带()，否则报错
+	  }
+	}
+
+	隐式值的优先级大于隐式参数的默认值
+	当一个隐式参数匹配不到隐式值时，仍然会使用隐式参数的默认值
+	当没有隐式值，没有默认值，又没有传值，就会报错
+	
+定长数组与变长数组的转换
+	1.arr1.toArray 变长数组转变成定长数组
+	2.arr2.toBuffer 定长数组转变成变长数组(arr2.toBuffer的返回结果才是一个可变数组，arr2本身没有发生变化)
+	
+元组Tuple
+	注意：元组中最大只能有22个元素
+	元组类型：根据元素的个数不同，对应不同的元组类型
+	
+	val tuple1 = (1,2,3,"hello",4)
+//    遍历元组，需要使用到迭代器
+    for(iter <- tuple1.productIterator){
+      println(iter)
+    }
+	
+List
+	:+和+:给list追加元素，+始终紧挨着添加的元素
+	val list = List[Any](1,2,3,"hello")
+    val list2 = list :+ 4	//List(1, 2, 3, hello, 4)
+    val list3 = 4 +: list	//List(4, 1, 2, 3, hello)
+
+	::将list集合整个放进新的list
+	:::将list集中的每个元素放进新的list,运算从右向左，将左边的集合打散，放进右边的集合，因为左右两边均为集合
+	val list4 = 5::6::7::list::Nil		//List(5, 6, 7, List(1, 2, 3, hello))
+	val list5 = 5::6::7::list:::Nil		//List(5, 6, 7, 1, 2, 3, hello)
+	
+	++=	将list集中的每个元素放进新的list，两边必须为list
+	    val list6 = ListBuffer[Int](1, 2, 3)
+		val list7 = new ListBuffer[Int]
+		list7 += 4
+		list7.append(5)
+
+		list6 ++= list7	
+		println(list6)	//ListBuffer(1, 2, 3, 4, 5)
+	
+Queue
+    val queue = new mutable.Queue[Int]()
+    queue.enqueue(1,2,3)	//加入队列
+    println(queue)
+    queue.dequeue()			//弹出头部元素
+    println(queue)
+	
+Map(默认是不可变的map)
+    // 二元组方式创建map
+    val map = mutable.Map(("Alice", 10), ("Bob", 20), ("Kotlin", 30))
+    println(map)
+
+    //使用map.get(key).get取值
+    //1.如果key存在，map.get(key)就会返回Some(值)，然后Some(值).get就可以取出值
+    //2.如果key不存在，map.get(key)就会返回None
+    println(map.get("Alice"))     //Some(10)
+    println(map.get("Alice").get) //10	
+	
+    //使用map.getOrElse()取值
+    println(map.getOrElse("Alice", "默认的鱼<・)))><<"))			//10
+    println(map.getOrElse("Alice~~~~", "默认的鱼<・)))><<"))		//默认的鱼<・)))><<
+	
+	删除map元素
+		map -= ("Alice", "Bob")
+		
+	map的遍历(三种方式)
+		val map2 = mutable.Map(("A", 1), ("B", "北京"), ("C", 3))	//可变的map
+		for((k, v) <- map2)
+		  println(k, v)
+		for(k <- map2.keys)
+		  println(k)
+		for(v <- map2.values)
+		  println(v)
+		for(x <- map2)
+		  println(x + "key:" + x._1 + "\t" + "value:" + x._2)
+	
+Set
+	scala中的set可以直接删除值，因为值不可重复，即set.remove("abc")
+	
+高阶函数例子	
+	object HighOrderFuncDemo01 {
+	  def main(args: Array[String]): Unit = {
+		val result = test(sum, 3.5)	//不能写成sum()，否则就表示将sum()执行完之后赋给test函数
+		println(result)
+
+	//    val f1 = myPrint()  //直接就执行了
+
+		// 在scala中，可以直接把一个函数赋值给变量，但是不执行函数，需要在函数后面加上下划线_
+		val f1 = myPrint _
+		f1 //这个时候才执行
+	  }
+	  def myPrint(): Unit ={
+		println("hello world!")
+	  }
+	  def test(f: Double => Double, n1: Double): Double ={
+		f(n1)
+	  }
+	  def sum(n: Double): Double ={
+		n + n
+	  }
+	}
+
+	map高阶函数使用
+		object MapDemo02 {
+		  def multiple(n: Int): Int = {
+			n * 2
+		  }
+		  def main(args: Array[String]): Unit = {
+			val list = List(1, 2, 3)
+			// 说明list.map(multiple)做了什么
+			// 1.将list这个集合的元素一次遍历
+			// 2.将各个元素传递给multiple，得到新的Int
+			// 3.将得到的新Int，放入到一个新的集合并返回
+			// 4.因此multiple函数调用3次，因为list中有三个元素
+			val list2 = list.map(multiple)
+			println(list2)
+		  }
+		}
+		
+	//深刻理解map映射函数的机制-模拟实现
+		class MyList{
+		  val list = List(1, 2, 3)
+		  var list2 = List[Int]()
+		  def map(f: Int => Int): List[Int] ={
+			for(item <- this.list){
+			  list2 = list2 :+ f(item)
+			}
+			list2
+		  }
+		}
+		object MyList{
+		  def apply(): MyList = new MyList()  //apply方法后面最好加上()
+		}
+		开始调用
+			val list3 = MyList()  //通过MyList伴生对象中的apply方法得到list对象
+			val myList3 = list3.map(multiple)
+			println(myList3)
+			
+部分高阶函数			
+	reduceLeft, reduceRight, reduce		//化简操作
+	foldLeft, foldRight, fold			//折叠操作，类似reduce的操作，只是需要先在操作的集合左边或者右边添加指定元素
+		如:	val list = List(1, 2, 3)
+			list.foldLeft(5)(minus)	//函数的柯里化
+	scanLeft:扫描操作，会把某个集合的所有元素做fold操作，但是会把产生的中间结果放置于一个集合中保存		
+	
+	具体例子如下：		
+		object HighOrderFuncDemo02 {
+		  def main(args: Array[String]): Unit = {
+			val list = List(1, 2, 3)
+
+			val scanList = list.scanLeft(4)(add)
+			println(scanList) //(4,5,7,10)
+			val scanRight = list.scanRight(4)(sub)
+			println(scanRight) //(-2,3,-1,4)
+
+			val reduceLeft = list.reduceLeft(add)
+			println(reduceLeft) //6
+			val reduceRight = list.reduceRight(sub)
+			println(reduceRight)  // (1-(2-3))=2
+
+			val foldLeft = list.foldLeft(4)(sub)
+			println(foldLeft) //((4-1)-2)-3=-2
+			val foldRight = list.foldRight(4)(sub)
+			println(foldRight)  //1-(2-(3-4))=-2
+		  }
+		  def add(n1: Int, n2: Int): Int ={
+			n1 + n2
+		  }
+		  def sub(n1: Int, n2: Int): Int ={
+			n1 - n2
+		  }
+		}			
+			
+View 视图
+	1.view方法产生一个总是被懒执行的集合，使用视图，可以实现懒执行
+	2.view不会缓存数据，每次都要重新计算
+	object ViewDemo01 {
+	  def main(args: Array[String]): Unit = {
+		val viewSquares1 = (1 to 100).filter(eq)
+		println(viewSquares1)	//直接打印出值
+
+		val viewSquares2 = (1 to 100).view.filter(eq)
+		println(viewSquares2)	//不会打印出值。返回的是一个SeqViewF(...)，需要在遍历的时候才执行
+		for(item <- viewSquares2)
+		  println("item= "+ item)
+	  }
+	  def eq(i: Int): Boolean = {
+		i.toString.equals(i.toString.reverse)
+	  }
+	}
+		
+下划线 _
+	1.对属性进行初始化
+	2.将函数赋值给变量
+	3.case _ 模式匹配默认值
+	
+match对象匹配之对象提取器unapply
+	object MatchObject {
+	  def main(args: Array[String]): Unit = {
+		val number = Square(5.0) // 默认调用apply方法，返回25.0
+		number match {
+		  // 当匹配到case Square(n)时，默认调用unapply(z: Double)方法, z的值就是number
+		  case Square(n) => println("匹配成功 n = " + n)
+		  case _ => println("nothing matched")
+		}
+	  }
+	}
+	object Square{
+	  // unapply方法是对象提取器
+	  def unapply(z: Double): Option[Double] = {
+		println("unapply 方法被调用, z = " + z )
+		Some(math.sqrt(z))
+	  }
+	  def apply(z: Double): Double = z * z
+	}
+	
+match对象匹配之对象提取器unapplySeq	
+	object MatchObject2 {
+	  def main(args: Array[String]): Unit = {
+		val names = "Alice, Bill, Tom"
+		names match {
+		  case Names(first, second, last) => println(s"$first, $second, $last")	// Alice,  Bill,  Tom
+		  case _ => println(" nothing matched")
+		}
+	  }
+	}
+	object  Names{
+	  def unapplySeq(str: String): Option[Seq[String]] = {
+		if(str.contains(",")) Some(str.split(","))
+		else None
+	  }
+	}
+		
+通过@将嵌套的值绑定到变量		
+	object SalesDemo {
+	  def main(args: Array[String]): Unit = {
+		val sale = Bundle("书籍", 10, Book("漫画", 40), Bundle("文学作品", 20, Book("《阳关》", 80), Book("《围城》", 30)))
+		val result = sale match {
+		  // 我们在进行对象匹配时，不需要匹配的可以使用下划线_进行忽略，_*表示匹配所有
+		  case Bundle(_, _, Book(desc, _), _*) => desc
+		}
+		println("result = "+result)
+
+		val result2 = sale match {
+		  // 通过@将嵌套的值绑定到变量
+		  case Bundle(_, _, art @ Book(_, _), rest @ _*) => (art, rest)
+		}
+		println(result2)
+		println("art = " + result2._1)		// art = Book(漫画,40.0)
+		println("rest = " + result2._2)		// rest = WrappedArray(Bundle(文学作品,20.0,WrappedArray(Book(《阳关》,80.0), Book(《围城》,30.0))))
+		
+		def price(item: Item): Double ={
+		  item match {
+			case Book(_, p) => p
+			case Bundle(_, disc, its @ _*) => {
+			  println("price被调用~~~~~~~~")
+			  // 递归调用price方法
+			  its.map(price).sum - disc
+			}
+		  }
+		}
+		println("price = " + price(sale))
+	  }
+	}
+	// 设计样例类
+	abstract class Item
+	case class Book(desc: String, price: Double) extends Item
+	case class Bundle(desc: String, discount: Double, item: Item*) extends Item		
+			
+密封类 abstract sealed class Item
+	1.如果想让case类的所有子类都必须在申明该类的相同的源文件中定义，可以将样例类的通用超类声明为sealed密封类
+	2.密封类不能再其它文件中定义子类
+		
+偏函数 Partial Function
+	object PartialDemo02 {
+	  def main(args: Array[String]): Unit = {
+		val list = List(1, 2, 3, 4, "hello")
+		// 定义一个偏函数
+		// 1.表示偏函数接收的参数类型是Any，返回的类型是Int
+		// 2.如果返回true，就会去调用apply方法构建对象实例，如果是false,过滤
+		val partialFun = new PartialFunction[Any, Int] {
+		  override def isDefinedAt(x: Any) = x.isInstanceOf[Int]
+
+		  override def apply(v1: Any) = v1.asInstanceOf[Int] + 1
+		}
+		// 使用偏函数，不能使用map，应该使用collect
+		val result = list.collect(partialFun)
+		println(result)
+	  }
+	}		
+	
+偏函数的简写形式
+object PartialFunctionDemo03 {
+  def main(args: Array[String]): Unit = {
+    // 偏函数的简写形式1
+    def partialFun2 : PartialFunction[Any, Int] = {
+      case i: Int => i + 1
+      case j: Double => (j * 2).toInt
+    }
+    val list = List(1, 2, 3, 4, 1.2, 2.4, "hello")
+    val result = list.collect(partialFun2)
+    println(result)
+    
+    // 偏函数的简写形式2
+    val list2 = list.collect{
+      case i: Int => i + 1
+      case j: Double => (j * 2).toInt
+    }
+    println(list2)
+  }
+}		
+		
+匿名函数
+	没有名字的函数，可以通过表达式，如果函数体有多行，使用{}
+	    val triple = (x: Double) => x * 3	//定义匿名函数
+		println(triple(3))	//调用匿名函数
+		
+高阶函数的应用实例
+	object HighOrderFunctionDemo01 {
+	  def main(args: Array[String]): Unit = {
+
+		// minusxy是一个高阶函数，因为它返回的是匿名函数
+		// 返回的匿名函数也可以使用变量接收，高阶函数的返回类型直接使用函数的推导类型
+		def minusxy(x: Int) ={	
+		  (y: Int) => x - y
+		}
+
+		// 分步执行
+		// f1就是(y: Int) => 3 - y
+		val f1 = minusxy(3)
+		println(f1(1))
+
+		// 函数的柯里化
+		// 首先执行minusxy(3)，返回一个函数3-y，再将参数6传递给返回的函数执行
+		println(minusxy(3)(6))
+	  }
+	}
+
+参数类型推断
+	object ParameterInferDemo {
+	  def main(args: Array[String]): Unit = {
+		val list = List(1, 2, 3, 4)
+		// 当传入的参数只有一个时，可以省去括号
+		// 如果变量只在=>右边出现一次，可以使用_来代替
+		println(list.map((x: Int) => x + 1))
+		println(list.map((x) => x + 1))
+		println(list.map(x => x + 1))
+		println(list.map(_ + 1))
+
+		println(list.reduce(f1))
+		println(list.reduce((n1: Int, n2: Int) => n1 + n2))
+		println(list.reduce((n1, n2) => n1 + n2))
+		println(list.reduce(_ + _))
+		def f1(n1: Int, n2: Int): Int ={
+		  n1 + n2
+		}
+	  }
+	}
+
+抽象控制
+	对于没有输入，也没有返回值的函数，可以使用抽象控制
+	object AbstractControlDemo02 {
+	  def main(args: Array[String]): Unit = {
+		var x = 10
+		while (x > 0){
+		  x -= 1
+		  println("x = " + x)
+		}
+
+		// 使用抽象控制实现while的功能
+		def until(f1: => Boolean)(f2: => Unit): Unit ={		// 递归的时候必须指定函数返回值类型
+		  if(f1){
+			f2
+			until(f1)(f2) // 递归的时候必须指定函数返回值类型
+		  }
+		}
+
+		var y  = 10
+		until(y > 0){
+		  y -= 1
+		  println("until y = " + y)
+		}
+	  }
+	}
+
+scala中breakable的用法
+    /**
+      * breakable的用法
+      * 1、首先需要导入scala.util.control.Breaks._这个包
+      * 2、将需要通过breakable控制的代码放到breakable的大括号中
+      */
+
+    import util.control.Breaks._
+    // 相当于break，跳出整个循环
+    breakable{
+      for(i <- 0 until array.length){
+        if(array(i) == 7){
+          println("哈哈哈")
+          break()
+        }
+        println(array(i))
+      }
+    }
+
+    // 相当于continue，跳出本次循环，继续执行下一次循环
+    for(i <- 0 until array.length){
+      breakable{
+        if(array(i) == 7){
+          println("呵呵呵")
+          break()
+        }
+        println(array(i))
+      }
+    }
+  
+Akka框架
+
+Actor模型的工作机制
+	1.ActorSystem创建Actor
+	2.ActorRef:可以理解成是Actor的代理或者引用。消息是通过ActorRef来发送，而不是通过Actor发送消息
+	  通过哪个ActorRef发消息，就表示把该消息发送给哪个Actor
+	3.消息发送到Dispatcher Message(消息分发器),它得到消息后，会将消息分发到对应的MailBox(Dispatcher Message可以理解成是一个
+	  线程池，MailBox可以理解成是消息队列，可以缓冲多个消息，遵守FIFO)
+	4.Actor可以通过receive方法来获取消息
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
