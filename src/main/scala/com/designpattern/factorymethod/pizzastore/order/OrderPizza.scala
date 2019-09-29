@@ -13,7 +13,7 @@ import scala.util.control.Breaks._
   * @ Version:     
   */
 
-// 这里我们将OrderPizza做成抽象类
+// 这里我们将OrderPizza做成抽象类,自己就相当于是一个工厂
 abstract class OrderPizza {
 
   def createPizza(orderType: String): Pizza
